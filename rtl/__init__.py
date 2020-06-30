@@ -10,7 +10,7 @@ most common simulation cases.
 
 Initially written by Marko Kosunen, 2017
 
-Last modification by Marko Kosunen, marko.kosunen@aalto.fi, 24.01.2020 15:28
+Last modification by Ilia Kempi, ilia.kempi@aalto.fi, 11.06.2020 00:35
 
 """
 import os
@@ -215,6 +215,22 @@ class rtl(thesdk,metaclass=abc.ABCMeta):
         return self._rtlworkpath
 
     @property
+    def compilerparameters(self): 
+        '''Compiler parameter string passed to the simulator 
+        during the compilation, useful for macro definition
+
+        '''
+        if not hasattr(self, '_compilerparameters'):
+            self._compilerparameters = []
+        return self._compilerparameters
+    @compilerparameters.setter
+    def compilerparameters(self,value): 
+            self._compilerparameters = value
+    @compilerparameters.deleter
+    def compilerparameters(self): 
+            self._compilerparameters = None
+
+    @property
     def rtlparameters(self): 
         '''Dictionary of parameters passed to the simulator 
         during the simulation invocation
@@ -278,7 +294,8 @@ class rtl(thesdk,metaclass=abc.ABCMeta):
 
         if self.model=='sv':
             vlogcompcmd = ( 'vlog -sv -work work ' + vlogmodulesstring 
-                    + ' ' + self.vlogsrc + ' ' + self.vlogtbsrc )
+                    + ' ' + self.vlogsrc + ' ' + ''.join(self.compilerparameters) + ' '
+                    + ' ' + self.vlogtbsrc )
         elif self.model=='vhdl':
             vlogcompcmd = ( 'vlog -sv -work work ' + vlogmodulesstring 
                     + ' ' + self.vlogtbsrc )
